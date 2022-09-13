@@ -1,11 +1,13 @@
 import "./App.css";
 import Signin from "./components/Signin";
-import Dashbroad from "./components/Events/Dashbroad";
+import Dashboard from "./components/Events/Dashboard";
+import NewEvent from "./components/Events/NewEvent";
 import {
   BrowserRouter,
   Routes,
   Route,
 } from "react-router-dom";
+import Dashboardlist from "./components/Events/Dashboardlist";
 
 function App() {
   return (
@@ -13,7 +15,9 @@ function App() {
     <div className="App" style={{ position: "relative" }}>
     <Routes>
     <Route path="/" element={<Signin />}/>
-    <Route path="/Dashbroad" element={ <Dashbroad />}/>
+    <Route path="/Dashboard" element={ <Dashboard />}/>
+    <Route path="/new-event" element={ <NewEvent />}/>
+    <Route path="/Dashboardlist" element={ <Dashboardlist />}/>
     
       
        </Routes>

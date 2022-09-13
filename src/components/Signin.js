@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-
+// import axios from "axios";
+import { useMutation } from "react-query";
 import {
   Box,
   Grid,
@@ -13,23 +14,22 @@ import {
 import { Link } from "react-router-dom";
 import image from "../image/background_img.svg";
 import google from "../image/google.svg";
-// import { makeStyles } from "@mui/styles";
+import Api from "../utils/Api";
+import { AuthService } from "../services/AuthService";
+import { useNavigate } from "react-router-dom";
 
 const ColorButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#FDC10E",
   "&:hover": {
     backgroundColor: "#FDC10E",
   },
-  // width: "312px",
 
   borderRadius: "4px",
   color: "#312D22",
 }));
 const StyleCard = styled(Card)(({ theme }) => ({
-  // padding: 20,
-  // height: "500px",
   width: "100%",
-  maxWidth: "360px",
+  maxWidth: "380px",
   margin: "24px auto",
 }));
 const Styleinput = styled(TextField)(({ theme }) => ({
@@ -64,18 +64,36 @@ const Stylecondition = styled(Typography)(({ theme }) => ({
 }));
 const Signin = () => {
   // const classes = useStyles();
+  const navigate=useNavigate()
 
-  const [Email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [EmailError, setEmailError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
+
+  const login = () => {
+    return Api.post("/api/v1/auth/login/", {
+      email: email,
+      password: password,
+    });
+  };
+  const mutation = useMutation(AuthService.login, {
+    onSuccess: (data) => {
+      localStorage.setItem("accessToken", data.data?.access);
+      localStorage.setItem("refreshToken", data.data?.refresh);
+      navigate("/Dashboard" )
+    },
+  });
+
+
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     setEmailError(false);
     setPasswordError(false);
 
-    if (Email === "") {
+    if (email === "") {
       setEmailError(true);
       return;
     }
@@ -84,7 +102,13 @@ const Signin = () => {
       return;
     }
 
-    console.log(Email, password);
+    console.log(email, password);
+    const params = {
+      email,
+      password,
+    };
+    login();
+    mutation.mutate(params);
   };
 
   return (
@@ -99,13 +123,8 @@ const Signin = () => {
         padding: "50px 0",
       }}
     >
-      {/* <Box sx={{ marginTop: "144px" }}> */}
       <Box
         sx={{
-          // position: "absolute",
-          // top: "8%",
-          // left: "50%",
-          // transform: `translate(-50%, -50%)`,
           textAlign: "center",
           marginBottom: "24px",
           color: "#FFF9E6",
@@ -141,11 +160,11 @@ const Signin = () => {
               <form noValidate autoComplete="off" onSubmit={handleSubmit}>
                 <Styleinput
                   onChange={(e) => setEmail(e.target.value)}
-                  label="Email address"
+                  label="email address"
                   required
                   placeholder="shezvar45@email.com"
-                  error={EmailError}
-                  multiline
+                  error={emailError}
+                  // multiline
                   fullWidth
                 />
                 <Styleinput
@@ -155,26 +174,27 @@ const Signin = () => {
                   type="password"
                   placeholder="password"
                   error={passwordError}
-                  multiline
+                  // multiline
                   fullWidth
                 />
-                <Link to="/forgot-password" style={{textDecoration:"none"}}>
+                <Link to="/forgot-password" style={{ textDecoration: "none" }}>
                   <Typography
                     sx={{
                       color: "#7C7666",
                       marginTop: "7px",
                       marginBottom: "16px",
                       fontSize: "14px",
-                     
                     }}
                     variant="subtitle2"
                   >
                     Forgot password?
                   </Typography>
                 </Link>
-                <ColorButton type="submit" variant="contained" fullWidth>
-                  Sign in
-                </ColorButton>
+                {/* <Link to="/Dashboard" style={{ textDecoration: "none" }}> */}
+                  <ColorButton  type="submit" variant="contained" fullWidth>
+                    Sign in
+                  </ColorButton>
+                {/* </Link> */}
               </form>
 
               <Box
@@ -205,14 +225,16 @@ const Signin = () => {
                 Sign in with Google
               </Stylegoogle>
               <Stylecondition>
-                By signing in, you are agreeing to our Terms & Conditions <br />{" "}
-                and Privacy Policy
+                By signing in, you are agreeing to our{" "}
+                <span style={{ color: "gold" }}>
+                  {" "}
+                  Terms & Conditions <br /> and Privacy Policy
+                </span>
               </Stylecondition>
             </CardContent>
           </StyleCard>
         </Grid>
       </Box>
-      {/* </Box> */}
     </Box>
   );
 };
